@@ -18,12 +18,20 @@ jobs:
         uses: mlugg/setup-zig@v1
         with:
           version: 0.13.0
-
-      - name: Compile for 32-bit Android/Termux
+      - name: Prepare Dependencies
         run: |
-          # We use arm-linux-androideabi to match your armv8l OS
-          zig build -Dtarget=arm-linux-androideabi -Doptimize=ReleaseSmall --summary all
+          mkdir -p vendor
+          git clone https://github.com/nullclaw/websocket vendor/websocket
+          git clone https://github.com/nullclaw/wasm3 vendor/wasm3
+          
+          # Fix the dependency syntax manually if it's broken
+          sed -i 's/.name = .websocket/.name = "websocket"/' vendor/websocket/build.zig.zon || true
+          sed -i 's/.name = .wasm3/.name = "wasm3"/' vendor/wasm3/build.zig.zon || true
 
+      - name: Compile for 32-bit Android
+        run: |
+          zig build -Dtarget=arm-linux-androideabi -Doptimize=ReleaseSmall --summary all
+          
       - name: Prepare Artifact
         run: |
           mkdir -p deploy
