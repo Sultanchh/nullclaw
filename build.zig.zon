@@ -1,15 +1,15 @@
 .{
-    .fingerprint = 0xe73e13d179b3e099, // Added this line for Zig 0.14.0
+    .fingerprint = 0xe73e13d179b3e099,
     .name = .nullclaw,
     .version = "0.1.0",
     .dependencies = .{
         .websocket = .{
             .url = "git+https://github.com/nullclaw/websocket#9151f70b27024a072ea04425b9e7609eb6b1386c",
-            .hash = "122026859560f608976a4059048a17686892b17b6a22c54d24177b8e1f6e6d191191",
+            .hash = "1220b5ed3d2463af2ea43ceec02d9e0687ff6e0c7f908148c71c71f0333f7a5592b1",
         },
         .wasm3 = .{
             .url = "git+https://github.com/nullclaw/wasm3#8a29b0080f1f65dbbe8b8f8c4d8148480feff377",
-            .hash = "12204683074092b74059048a17686892b17b6a22c54d24177b8e1f6e6d1911911911",
+            .hash = "122016494d1323a9954bc29f5b88717b18c5bf239020d8298702aec8fe54dc3fe4d5",
         },
     },
     .paths = .{
