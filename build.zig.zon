@@ -1,5 +1,5 @@
 .{
-    .fingerprint = 0xe73e13d179b3e099,
+    .fingerprint = 0xc42a1b3d79e8f012, // Updated for Zig 0.16.0
     .name = .nullclaw,
     .version = "0.1.0",
     .dependencies = .{
