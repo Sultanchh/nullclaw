@@ -4,20 +4,23 @@
     .version = "0.1.0",
     .dependencies = .{
         .websocket = .{
-            .url = "https://github.com/nullclaw/websocket/archive/9151f70b27024a072ea04425b9e7609eb6b1386c.tar.gz",
+            .url = "https://github.com/Sultanchh/websocket/archive/9151f70b27024a072ea04425b9e7609eb6b1386c.tar.gz",
+            // Replace 'xxxx' with the full hash from your previous log!
             .hash = "websocket-0.1.0-ZPISdfzRAwC17T0kY68upDzuwC2eBof_bgx_kIFIxxxx",
         },
         .wasm3 = .{
-            .url = "https://github.com/nullclaw/wasm3/archive/8a29b0080f1f65dbbe8b8f8c4d8148480feff377.tar.gz",
+            .url = "https://github.com/Sultanchh/wasm3/archive/8a29b0080f1f65dbbe8b8f8c4d8148480feff377.tar.gz",
             .hash = "wasm3-0.5.1-hrMdNS09BQAWSU0TI6mVS8KfW4hxexjFvyOQINgphwKu",
         },
         .sqlite3 = .{
-            .url = "https://github.com/nullclaw/sqlite3/archive/7d5c58804961502447990176059c2f6d0f666f8e.tar.gz",
+            // Standard NullClaw setup uses a vendored path for sqlite
+            .path = "vendor/sqlite3",
         },
     },
     .paths = .{
         "build.zig",
         "build.zig.zon",
         "src",
+        "vendor",
     },
 }
