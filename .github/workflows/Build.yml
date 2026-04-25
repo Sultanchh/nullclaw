@@ -17,17 +17,21 @@ jobs:
       - name: Setup Zig
         uses: goto-bus-stop/setup-zig@v2
         with:
-          version: master # This will pull the latest 0.17.0-dev
+          version: master 
           
       - name: Prepare Dependencies
         run: |
+          rm -rf vendor  # Prevent clone conflicts
           mkdir -p vendor
-          git clone https://github.com/nullclaw/websocket vendor/websocket
-          git clone https://github.com/nullclaw/wasm3 vendor/wasm3
-          git clone https://github.com/Sultanchh/sqlite vendor/sqlite3  # <--- ADD THIS
-          # Fix the dependency syntax manually if it's broken
+          # Clone all dependencies into the local vendor folder
+          git clone https://github.com/Sultanchh/websocket vendor/websocket
+          git clone https://github.com/Sultanchh/wasm3 vendor/wasm3
+          git clone https://github.com/Sultanchh/sqlite vendor/sqlite3
+          
+          # Force older dependency files to use the new string syntax for Master
           sed -i 's/.name = .websocket/.name = "websocket"/' vendor/websocket/build.zig.zon || true
           sed -i 's/.name = .wasm3/.name = "wasm3"/' vendor/wasm3/build.zig.zon || true
+          sed -i 's/.name = .sqlite/.name = "sqlite3"/' vendor/sqlite3/build.zig.zon || true
 
       - name: Compile for 32-bit Android
         run: |
@@ -36,11 +40,11 @@ jobs:
       - name: Prepare Artifact
         run: |
           mkdir -p deploy
-          cp zig-out/bin/nullclaw deploy/nullclaw-android-32bit
+          # Note: Ensure zig-out/bin/nullclaw exists; Zig sometimes adds a suffix
+          cp zig-out/bin/nullclaw deploy/nullclaw-android-32bit || cp zig-out/bin/nullclaw.exe deploy/nullclaw-android-32bit
           
       - name: Upload Binary
         uses: actions/upload-artifact@v4
         with:
           name: agent-ghost-binary
           path: deploy/nullclaw-android-32bit
-          
