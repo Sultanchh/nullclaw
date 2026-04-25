@@ -15,9 +15,9 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Zig
-        uses: mlugg/setup-zig@v1
+        uses: goto-bus-stop/setup-zig@v2
         with:
-          version: master # This pulls the latest development build (0.16.0-dev)
+          version: master # This will pull the latest 0.17.0-dev
           
       - name: Prepare Dependencies
         run: |
