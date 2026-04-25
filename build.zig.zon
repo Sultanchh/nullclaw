@@ -5,11 +5,9 @@
     .dependencies = .{
         .websocket = .{
             .url = "git+https://github.com/nullclaw/websocket#9151f70b27024a072ea04425b9e7609eb6b1386c",
-            .hash = "12200000000000000000000000000000000000000000000000000000000000000000", 
         },
         .wasm3 = .{
             .url = "git+https://github.com/nullclaw/wasm3#8a29b0080f1f65dbbe8b8f8c4d8148480feff377",
-            .hash = "12200000000000000000000000000000000000000000000000000000000000000000",
         },
     },
     .paths = .{
