@@ -24,7 +24,7 @@ jobs:
           mkdir -p vendor
           git clone https://github.com/nullclaw/websocket vendor/websocket
           git clone https://github.com/nullclaw/wasm3 vendor/wasm3
-          
+          git clone https://github.com/Sultanchh/sqlite vendor/sqlite3  # <--- ADD THIS
           # Fix the dependency syntax manually if it's broken
           sed -i 's/.name = .websocket/.name = "websocket"/' vendor/websocket/build.zig.zon || true
           sed -i 's/.name = .wasm3/.name = "wasm3"/' vendor/wasm3/build.zig.zon || true
