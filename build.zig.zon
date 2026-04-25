@@ -4,15 +4,16 @@
     .version = "0.1.0",
     .dependencies = .{
         .websocket = .{
-            .url = "git+https://github.com/nullclaw/websocket#9151f70b27024a072ea04425b9e7609eb6b1386c",
+            .url = "https://github.com/nullclaw/websocket/archive/9151f70b27024a072ea04425b9e7609eb6b1386c.tar.gz",
             .hash = "websocket-0.1.0-ZPISdfzRAwC17T0kY68upDzuwC2eBof_bgx_kIFIxxxx",
         },
         .wasm3 = .{
-            .url = "git+https://github.com/nullclaw/wasm3#8a29b0080f1f65dbbe8b8f8c4d8148480feff377",
+            .url = "https://github.com/nullclaw/wasm3/archive/8a29b0080f1f65dbbe8b8f8c4d8148480feff377.tar.gz",
             .hash = "wasm3-0.5.1-hrMdNS09BQAWSU0TI6mVS8KfW4hxexjFvyOQINgphwKu",
         },
         .sqlite3 = .{
-            .url = "git+https://github.com/zig-sqlite/zig-sqlite#82390779774619717614d9b7364177b8b261186c",
+            .url = "https://github.com/zig-sqlite/zig-sqlite/archive/82390779774619717614d9b7364177b8b261186c.tar.gz",
+            // Leave hash blank so Zig can suggest the correct Base32 string
         },
     },
     .paths = .{
