@@ -36,7 +36,7 @@ jobs:
           # We use "sed" to change .name = .something to .name = "something"
           find vendor -name "build.zig.zon" -exec sed -i 's/\.name = \.\([a-z0-9_]*\)/\.name = "\1"/g' {} +
           
-            - name: Compile for 32-bit Android
+      - name: Compile for 32-bit Android
         run: |
           zig build -Dtarget=arm-linux-androideabi -Doptimize=ReleaseSmall --summary all
           
