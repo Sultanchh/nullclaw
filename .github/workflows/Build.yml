@@ -18,22 +18,25 @@ jobs:
         uses: goto-bus-stop/setup-zig@v2
         with:
           version: master 
-          
       - name: Prepare Dependencies
         run: |
-          rm -rf vendor  # Prevent clone conflicts
+          # 1. Clean the environment to prevent "already exists" errors
+          rm -rf vendor
           mkdir -p vendor
-          # Clone all dependencies into the local vendor folder
-          git clone https://github.com/Sultanchh/websocket vendor/websocket
-          git clone https://github.com/Sultanchh/wasm3 vendor/wasm3
-          git clone https://github.com/Sultanchh/sqlite vendor/sqlite3
           
-          # Force older dependency files to use the new string syntax for Master
-          sed -i 's/.name = .websocket/.name = "websocket"/' vendor/websocket/build.zig.zon || true
-          sed -i 's/.name = .wasm3/.name = "wasm3"/' vendor/wasm3/build.zig.zon || true
-          sed -i 's/.name = .sqlite/.name = "sqlite3"/' vendor/sqlite3/build.zig.zon || true
+          # 2. Clone from the original sources (verified public)
+          git clone https://github.com/nullclaw/websocket vendor/websocket
+          git clone https://github.com/nullclaw/wasm3 vendor/wasm3
+          
+          # 3. Use the correct name for the sqlite repo. 
+          # If 'sqlite' 404s, we try 'sqlite3'.
+          git clone https://github.com/nullclaw/sqlite vendor/sqlite3 || git clone https://github.com/nullclaw/sqlite3 vendor/sqlite3
 
-      - name: Compile for 32-bit Android
+          # 4. Patch the .zon files for Zig 0.17.0-dev compatibility
+          # We use "sed" to change .name = .something to .name = "something"
+          find vendor -name "build.zig.zon" -exec sed -i 's/\.name = \.\([a-z0-9_]*\)/\.name = "\1"/g' {} +
+          
+            - name: Compile for 32-bit Android
         run: |
           zig build -Dtarget=arm-linux-androideabi -Doptimize=ReleaseSmall --summary all
           
