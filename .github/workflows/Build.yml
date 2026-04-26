@@ -1,53 +1,96 @@
-name: Ghost Compiler (32-bit ARM)
+name: Build Android ARM Binary
+
 on:
-  push:
-    branches: [ "main", "master" ]
   workflow_dispatch:
- 
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
 jobs:
-  build:
+  build-android-arm:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      # ── 1. Checkout main repo ─────────────────────────────
+      - name: Checkout nullclaw
         uses: actions/checkout@v4
         with:
-          submodules: recursive
-          fetch-depth: 0
+          path: nullclaw
 
-      - name: Setup Zig
-        uses: goto-bus-stop/setup-zig@v2
+      # ── 2. Vendor dependencies into vendor/ ───────────────
+      # We clone the exact commits referenced in the original build.zig.zon
+      - name: Vendor websocket dependency
+        uses: actions/checkout@v4
         with:
-          version: master 
-      - name: Prepare Dependencies
-        run: |
-          # 1. Clean the environment to prevent "already exists" errors
-          rm -rf vendor
-          mkdir -p vendor
-          
-          # 2. Clone from the original sources (verified public)
-          git clone https://github.com/nullclaw/websocket vendor/websocket
-          git clone https://github.com/nullclaw/wasm3 vendor/wasm3
-          
-          # 3. Use the correct name for the sqlite repo. 
-          # If 'sqlite' 404s, we try 'sqlite3'.
-          git clone https://github.com/nullclaw/sqlite vendor/sqlite3 || git clone https://github.com/nullclaw/sqlite3 vendor/sqlite3
+          repository: nullclaw/websocket
+          ref: 9151f70b27024a072ea04425b9e7609eb6b1386c
+          path: nullclaw/vendor/websocket
 
-          # 4. Patch the .zon files for Zig 0.17.0-dev compatibility
-          # We use "sed" to change .name = .something to .name = "something"
-          find vendor -name "build.zig.zon" -exec sed -i 's/\.name = \.\([a-z0-9_]*\)/\.name = "\1"/g' {} +
-          
-      - name: Compile for 32-bit Android
+      - name: Vendor wasm3 dependency
+        uses: actions/checkout@v4
+        with:
+          repository: nullclaw/wasm3
+          ref: 8a29b0080f1f65dbbe8b8f8c4d8148480feff377
+          path: nullclaw/vendor/wasm3
+
+      # sqlite3 is already in vendor/sqlite3 per the main repo
+
+      # ── 3. Replace build.zig.zon with vendored version ────
+      - name: Use vendored build.zig.zon
         run: |
-          zig build -Dtarget=arm-linux-androideabi -Doptimize=ReleaseSmall --summary all
-          
-      - name: Prepare Artifact
+          cat > nullclaw/build.zig.zon << 'ZON'
+          .{
+              .name = .nullclaw,
+              .version = "2026.4.17",
+              .fingerprint = 0xe73e13d1c95956c2,
+              .minimum_zig_version = "0.16.0",
+              .dependencies = .{
+                  .sqlite3 = .{
+                      .path = "vendor/sqlite3",
+                  },
+                  .websocket = .{
+                      .path = "vendor/websocket",
+                  },
+                  .wasm3 = .{
+                      .path = "vendor/wasm3",
+                  },
+              },
+              .paths = .{
+                  "build.zig",
+                  "build.zig.zon",
+                  "src",
+                  "vendor",
+                  "LICENSE",
+              },
+          }
+          ZON
+
+      # ── 4. Install Zig 0.17.0-dev (master) ────────────────
+      - name: Install Zig master
+        uses: mlugg/setup-zig@v1
+        with:
+          version: master  # 0.17.0-dev as of build time
+
+      # ── 5. Build for Android ARM (32-bit) ─────────────────
+      - name: Build nullclaw for arm-linux-androideabi
+        working-directory: ./nullclaw
         run: |
-          mkdir -p deploy
-          # Note: Ensure zig-out/bin/nullclaw exists; Zig sometimes adds a suffix
-          cp zig-out/bin/nullclaw deploy/nullclaw-android-32bit || cp zig-out/bin/nullclaw.exe deploy/nullclaw-android-32bit
-          
-      - name: Upload Binary
+          zig build \
+            -Dtarget=arm-linux-androideabi \
+            -Doptimize=ReleaseSmall \
+            -Dstatic=true
+
+      # ── 6. Verify output ──────────────────────────────────
+      - name: Show binary info
+        working-directory: ./nullclaw
+        run: |
+          ls -lh zig-out/bin/nullclaw
+          file zig-out/bin/nullclaw
+
+      # ── 7. Upload artifact ────────────────────────────────
+      - name: Upload binary artifact
         uses: actions/upload-artifact@v4
         with:
-          name: agent-ghost-binary
-          path: deploy/nullclaw-android-32bit
+          name: nullclaw-android-arm32
+          path: nullclaw/zig-out/bin/nullclaw
+          if-no-files-found: error
